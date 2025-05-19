@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getCars } from "@/utils/api";
-import { Car } from "@/interface/carDataInterface";
-import CarCard from "@/components/CarCard";
-import Pagination from "@/components/Pagination";
+import { getCars } from "@/src/utils/api";
+import { Car } from "@/src/interface/carDataInterface";
+import CarCard from "@/src/components/CarCard";
+import Pagination from "@/src/components/Pagination";
 
 export default function HomePage() {
   const [cars, setCars] = useState<Car[]>([]);

@@ -1,5 +1,5 @@
-import CarCarousel from "@/components/CarSlider";
-import { getCarById } from "@/utils/api";
+import CarCarousel from "@/src/components/CarSlider";
+import { getCarById } from "@/src/utils/api";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
