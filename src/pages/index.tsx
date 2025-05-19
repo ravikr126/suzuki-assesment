@@ -1,115 +1,130 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+"use client";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import { useState, useEffect } from "react";
+import { getCars } from "@/utils/api";
+import { Car } from "@/interface/carDataInterface";
+import CarCard from "@/components/CarCard";
+import Pagination from "@/components/Pagination";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+export default function HomePage() {
+  const [cars, setCars] = useState<Car[]>([]);
+  const [filteredCars, setFilteredCars] = useState<Car[]>([]);
+  const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState({ make: "", model: "", year: "" });
 
-export default function Home() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(6);
+
+  useEffect(() => {
+    getCars().then(setCars);
+  }, []);
+
+  useEffect(() => {
+    const filtered = cars.filter(
+      (car) =>
+        (car.make.toLowerCase().includes(search.toLowerCase()) ||
+          car.model.toLowerCase().includes(search.toLowerCase()) ||
+          car.year.toString().includes(search)) &&
+        (filters.make
+          ? car.make.toLowerCase().includes(filters.make.toLowerCase())
+          : true) &&
+        (filters.model
+          ? car.model.toLowerCase().includes(filters.model.toLowerCase())
+          : true) &&
+        (filters.year ? car.year.toString().includes(filters.year) : true)
+    );
+    setFilteredCars(filtered);
+    setCurrentPage(1);
+  }, [search, filters, cars]);
+
+  const totalPages = Math.ceil(filteredCars.length / itemsPerPage);
+  const indexOfLastCar = currentPage * itemsPerPage;
+  const indexOfFirstCar = indexOfLastCar - itemsPerPage;
+  const currentCars = filteredCars.slice(indexOfFirstCar, indexOfLastCar);
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/pages/index.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="min-h-screen bg-white">
+      <section className="bg-gray-100 py-12 px-4 text-center">
+        <h1 className="text-4xl sm:text-5xl font-bold uppercase text-gray-800">
+          Automobile Lineup
+        </h1>
+        <p className="text-lg text-gray-600 mt-4">
+          Explore a wide range of cars with advanced technology and style.
+        </p>
+      </section>
+
+      <section className="max-w-7xl mx-auto px-4 py-8">
+        {/* Search & Filters */}
+        <div className="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-4 md:space-y-0 mb-8">
+          <input
+            type="text"
+            placeholder="Search by make, model, or year"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border border-gray-300 px-4 py-2 rounded-md w-full md:w-1/3"
+          />
+          <select
+            className="border border-gray-300 px-4 py-2 rounded-md w-full md:w-1/4"
+            value={filters.make}
+            onChange={(e) =>
+              setFilters((prev) => ({ ...prev, make: e.target.value }))
+            }
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <option value="">All Makes</option>
+            {[...new Set(cars.map((car) => car.make))].map((make) => (
+              <option key={make} value={make}>
+                {make}
+              </option>
+            ))}
+          </select>
+
+          <input
+            type="text"
+            placeholder="Model"
+            value={filters.model}
+            onChange={(e) =>
+              setFilters((prev) => ({ ...prev, model: e.target.value }))
+            }
+            className="border border-gray-300 px-4 py-2 rounded-md w-full md:w-1/4"
+          />
+          <input
+            type="text"
+            placeholder="Year"
+            value={filters.year}
+            onChange={(e) =>
+              setFilters((prev) => ({ ...prev, year: e.target.value }))
+            }
+            className="border border-gray-300 px-4 py-2 rounded-md w-full md:w-1/4"
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+        {/* Car Grid */}
+        {currentCars.length === 0 ? (
+          <p className="text-center text-gray-500 text-lg mt-12">
+            No cars found matching your criteria.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 justify-center">
+            {currentCars.map((car) => (
+              <CarCard key={car.id} car={car} />
+            ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        <div className="flex justify-center mt-12">
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalPages}
+            initialItemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(newItemsPerPage) => {
+              setItemsPerPage(newItemsPerPage);
+              setCurrentPage(1); // reset page on items per page change
+            }}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        </div>
+      </section>
+    </main>
   );
 }
