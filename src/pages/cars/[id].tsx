@@ -4,13 +4,20 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 interface Car {
+  id: number;
   make: string;
   model: string;
   year: number;
-  images: string[];
+  color: string;
+  mileage: number;
   price: number;
-  description: string;
-  specifications: Record<string, string | number>;
+  fuelType: string;
+  transmission: string;
+  engine: string;
+  horsepower: number;
+  owners: number;
+  features: string[];
+  image: string[];
 }
 
 export default function CarDetails() {
@@ -22,6 +29,7 @@ export default function CarDetails() {
 
   useEffect(() => {
     if (!id) return;
+
     setLoading(true);
     setError(null);
 
@@ -60,7 +68,6 @@ export default function CarDetails() {
   if (!car) return <p>No car found.</p>;
 
   const formatPrice = (price: number) => `$${price.toLocaleString("en-US")}`;
-
   const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
   return (
@@ -76,23 +83,28 @@ export default function CarDetails() {
         {car.make} {car.model} ({car.year})
       </h1>
 
-      <CarCarousel images={car.images} />
+      <CarCarousel images={car.image} />
 
       <p className="mt-4 text-2xl font-semibold text-green-700">
         {formatPrice(car.price)}
       </p>
 
-      <p className="mt-4 text-gray-700">{car.description}</p>
-
-      <h2 className="mt-6 text-xl font-semibold">Specifications</h2>
+      <h2 className="mt-6 text-xl font-semibold">Key Specifications</h2>
       <ul className="mt-2 list-disc list-inside space-y-1">
-        <ul className="mt-2 list-disc list-inside space-y-1">
-          {Object.entries(car.specifications).map(([key, value]) => (
-            <li key={key}>
-              <strong>{capitalize(key)}:</strong> {value}
-            </li>
-          ))}
-        </ul>
+        <li><strong>Engine:</strong> {car.engine}</li>
+        <li><strong>Transmission:</strong> {car.transmission}</li>
+        <li><strong>Fuel Type:</strong> {car.fuelType}</li>
+        <li><strong>Horsepower:</strong> {car.horsepower} hp</li>
+        <li><strong>Color:</strong> {car.color}</li>
+        <li><strong>Mileage:</strong> {car.mileage.toLocaleString()} km</li>
+        <li><strong>Previous Owners:</strong> {car.owners}</li>
+      </ul>
+
+      <h2 className="mt-6 text-xl font-semibold">Features</h2>
+      <ul className="mt-2 list-disc list-inside space-y-1">
+        {car.features.map((feature, idx) => (
+          <li key={idx}>{feature}</li>
+        ))}
       </ul>
     </div>
   );
