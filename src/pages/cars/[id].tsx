@@ -1,24 +1,9 @@
 import CarCarousel from "@/src/components/CarSlider";
+import { Car } from "@/src/interface/carDataInterface";
 import { getCarById } from "@/src/utils/api";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-interface Car {
-  id: number;
-  make: string;
-  model: string;
-  year: number;
-  color: string;
-  mileage: number;
-  price: number;
-  fuelType: string;
-  transmission: string;
-  engine: string;
-  horsepower: number;
-  owners: number;
-  features: string[];
-  image: string[];
-}
 
 export default function CarDetails() {
   const router = useRouter();

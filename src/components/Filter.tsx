@@ -1,7 +1,4 @@
-interface FiltersProps {
-  filters: { make: string; model: string; year: string };
-  onChange: (filters: { make: string; model: string; year: string }) => void;
-}
+import { FiltersProps } from "@/src/interface/filterInterface";
 
 export default function Filters({ filters, onChange }: FiltersProps) {
   return (

@@ -1,11 +1,4 @@
-interface PaginationProps {
-  currentPage?: number;
-  totalItems: number;
-  itemsPerPage: number; // Required now
-  itemsPerPageOptions?: number[];
-  onPageChange?: (page: number) => void;
-  onItemsPerPageChange?: (itemsPerPage: number) => void;
-}
+import { PaginationProps } from "@/src/interface/paginationInterface";
 
 export default function Pagination({
   currentPage = 1,

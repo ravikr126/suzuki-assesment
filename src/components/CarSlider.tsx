@@ -1,9 +1,6 @@
 
 import { useState } from 'react';
-
-interface CarCarouselProps {
-  images: string[];
-}
+import { CarCarouselProps } from '@/src/interface/carsliderInterface';
 
 export default function CarCarousel({ images }: CarCarouselProps) {
   const [index, setIndex] = useState(0);

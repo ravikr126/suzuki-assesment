@@ -1,7 +1,5 @@
-// SearchBar.tsx
-interface SearchBarProps {
-  onSearch: (value: string) => void;
-}
+import { SearchBarProps } from "@/src/interface/searchbarInterface";
+
 
 export default function SearchBar({ onSearch }: SearchBarProps) {
 

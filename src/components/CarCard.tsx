@@ -1,12 +1,7 @@
 import React, { useState } from "react";
-import { Car } from "@/src/interface/carDataInterface";
 import Link from "next/link";
-import Lottie from "lottie-react";
-import loadingAnimation from "@/public/loader.json";
+import { CarCardProps } from "@/src/interface/caeCardInterface";
 
-interface CarCardProps {
-  car: Car;
-}
 
 const CarCard: React.FC<CarCardProps> = ({ car }) => {
   const [imgError, setImgError] = useState(false);
