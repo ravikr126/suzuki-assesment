@@ -1,38 +1,67 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getCars } from "@/src/utils/api";
 import { Car } from "@/src/interface/carDataInterface";
 import CarCard from "@/src/components/CarCard";
 import Pagination from "@/src/components/Pagination";
+
+const API_URL =
+  "https://arpitjoshi.github.io/8e4474f3-d675-44c2-ba12-ccfacfa97c8b.json";
 
 export default function HomePage() {
   const [cars, setCars] = useState<Car[]>([]);
   const [filteredCars, setFilteredCars] = useState<Car[]>([]);
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState({ make: "", model: "", year: "" });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(6);
 
   useEffect(() => {
-    getCars().then(setCars);
+    const fetchCars = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(API_URL);
+        if (!response.ok) {
+          throw new Error(
+            `Failed to fetch cars: ${response.status} ${response.statusText}`
+          );
+        }
+        const data: Car[] = await response.json();
+        setCars(data);
+      } catch (err: any) {
+        setError(err.message);
+        console.error("Error fetching cars:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCars();
   }, []);
 
   useEffect(() => {
-    const filtered = cars.filter(
-      (car) =>
-        (car.make.toLowerCase().includes(search.toLowerCase()) ||
-          car.model.toLowerCase().includes(search.toLowerCase()) ||
-          car.year.toString().includes(search)) &&
-        (filters.make
-          ? car.make.toLowerCase().includes(filters.make.toLowerCase())
-          : true) &&
-        (filters.model
-          ? car.model.toLowerCase().includes(filters.model.toLowerCase())
-          : true) &&
-        (filters.year ? car.year.toString().includes(filters.year) : true)
-    );
+    const filtered = cars.filter((car) => {
+      const searchMatch =
+        car.make.toLowerCase().includes(search.toLowerCase()) ||
+        car.model.toLowerCase().includes(search.toLowerCase()) ||
+        car.year.toString().includes(search);
+
+      const makeMatch = filters.make
+        ? car.make.toLowerCase().includes(filters.make.toLowerCase())
+        : true;
+
+      const modelMatch = filters.model
+        ? car.model.toLowerCase().includes(filters.model.toLowerCase())
+        : true;
+
+      const yearMatch = filters.year ? car.year.toString().includes(filters.year) : true;
+
+      return searchMatch && makeMatch && modelMatch && yearMatch;
+    });
     setFilteredCars(filtered);
     setCurrentPage(1);
   }, [search, filters, cars]);
@@ -41,6 +70,22 @@ export default function HomePage() {
   const indexOfLastCar = currentPage * itemsPerPage;
   const indexOfFirstCar = indexOfLastCar - itemsPerPage;
   const currentCars = filteredCars.slice(indexOfFirstCar, indexOfLastCar);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <p className="text-xl text-gray-700">Loading cars...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <p className="text-red-500 text-xl">Error loading cars: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-white">

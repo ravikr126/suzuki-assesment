@@ -1,14 +1,16 @@
 export interface Car {
-  id: string;
+  id: number;
   make: string;
   model: string;
   year: number;
+  color: string;
+  mileage: number;
   price: number;
-  description: string;
-  images: string[];
-  specifications: {
-    engine: string;
-    transmission: string;
-    fuel: string;
-  };
+  fuelType: string;
+  transmission: string;
+  engine: string;
+  horsepower: number;
+  features: string[];
+  owners: number;
+  image: string[]; // <-- change this from 'images' to 'image'
 }
