@@ -58,7 +58,9 @@ export default function HomePage() {
         ? car.model.toLowerCase().includes(filters.model.toLowerCase())
         : true;
 
-      const yearMatch = filters.year ? car.year.toString().includes(filters.year) : true;
+      const yearMatch = filters.year
+        ? car.year.toString().includes(filters.year)
+        : true;
 
       return searchMatch && makeMatch && modelMatch && yearMatch;
     });
@@ -160,12 +162,12 @@ export default function HomePage() {
         <div className="flex justify-center mt-12">
           <Pagination
             currentPage={currentPage}
-            totalItems={totalPages}
-            initialItemsPerPage={itemsPerPage}
+            totalItems={filteredCars.length}
+            itemsPerPage={itemsPerPage}
             onPageChange={setCurrentPage}
             onItemsPerPageChange={(newItemsPerPage) => {
               setItemsPerPage(newItemsPerPage);
-              setCurrentPage(1); // reset page on items per page change
+              setCurrentPage(1);
             }}
           />
         </div>

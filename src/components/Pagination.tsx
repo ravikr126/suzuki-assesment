@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
-
 interface PaginationProps {
   currentPage?: number;
   totalItems: number;
+  itemsPerPage: number; // Required now
   itemsPerPageOptions?: number[];
-  initialItemsPerPage?: number;
   onPageChange?: (page: number) => void;
   onItemsPerPageChange?: (itemsPerPage: number) => void;
 }
@@ -12,46 +10,22 @@ interface PaginationProps {
 export default function Pagination({
   currentPage = 1,
   totalItems,
+  itemsPerPage,
   itemsPerPageOptions = [5, 10, 25, 50],
-  initialItemsPerPage = 5,
   onPageChange = () => {},
   onItemsPerPageChange = () => {},
 }: PaginationProps) {
-  const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
-  const [page, setPage] = useState(currentPage);
-
-
   const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
-
-  useEffect(() => {
-    setItemsPerPage(initialItemsPerPage);
-    setPage(currentPage);
-  }, []); 
-
-  useEffect(() => {
-    if (currentPage !== page) {
-      setPage(currentPage);
-    }
-  }, [currentPage]);
-
- useEffect(() => {
-    if (page > totalPages) {
-      setPage(totalPages);
-      onPageChange(totalPages);
-    }
-  }, [totalItems, itemsPerPage, totalPages]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages) return;
-    setPage(newPage);
     onPageChange(newPage);
   };
+
   const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newItemsPerPage = Number(e.target.value);
-    setItemsPerPage(newItemsPerPage);
     onItemsPerPageChange(newItemsPerPage);
-    setPage(1);
-    onPageChange(1);
+    onPageChange(1); // reset to page 1
   };
 
   return (
@@ -76,23 +50,23 @@ export default function Pagination({
 
       <div className="flex items-center gap-3 text-sm text-gray-700">
         <span>
-          Page {page} of {totalPages}
+          Page {currentPage} of {totalPages}
         </span>
 
         <button
-          disabled={page <= 1}
-          onClick={() => handlePageChange(page - 1)}
+          disabled={currentPage <= 1}
+          onClick={() => handlePageChange(currentPage - 1)}
           className={`px-3 py-1 rounded border border-gray-300 shadow-sm transition
-            ${page <= 1 ? "text-gray-400 cursor-not-allowed" : "hover:bg-blue-600 hover:text-white"}`}
+            ${currentPage <= 1 ? "text-gray-400 cursor-not-allowed" : "hover:bg-blue-600 hover:text-white"}`}
         >
           Prev
         </button>
 
         <button
-          disabled={page >= totalPages}
-          onClick={() => handlePageChange(page + 1)}
+          disabled={currentPage >= totalPages}
+          onClick={() => handlePageChange(currentPage + 1)}
           className={`px-3 py-1 rounded border border-gray-300 shadow-sm transition
-            ${page >= totalPages ? "text-gray-400 cursor-not-allowed" : "hover:bg-blue-600 hover:text-white"}`}
+            ${currentPage >= totalPages ? "text-gray-400 cursor-not-allowed" : "hover:bg-blue-600 hover:text-white"}`}
         >
           Next
         </button>
